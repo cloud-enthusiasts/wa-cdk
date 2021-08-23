@@ -1,9 +1,10 @@
 import * as cdk from '@aws-cdk/core';
+import {WABucket} from "./constructs/wa-s3/WABucket";
 
 export class WaCdkStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    new WABucket(this, "MyBucket", {})
   }
 }
