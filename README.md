@@ -1,2 +1,14 @@
-# wa-cdk
-AWS Well Architected CDK
+# Welcome to your Well Architected CDK Constructs.
+
+In this project we will extend the AWS CDK construct and provide well architected version of various resources.
+
+The `cdk.json` file tells the CDK Toolkit how to execute your app.
+
+## Useful commands
+
+ * `npm run build`   compile typescript to js
+ * `npm run watch`   watch for changes and compile
+ * `npm run test`    perform the jest unit tests
+ * `cdk deploy`      deploy this stack to your default AWS account/region
+ * `cdk diff`        compare deployed stack with current state
+ * `cdk synth`       emits the synthesized CloudFormation template
