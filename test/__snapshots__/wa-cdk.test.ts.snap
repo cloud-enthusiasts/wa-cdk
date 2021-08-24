@@ -173,6 +173,11 @@ Object {
         "LoggingConfiguration": Object {
           "DestinationBucketName": "mytestlogbucket",
         },
+        "MetricsConfigurations": Array [
+          Object {
+            "Id": "MyTestBucket-ReqMetrics",
+          },
+        ],
         "PublicAccessBlockConfiguration": Object {
           "BlockPublicAcls": true,
           "BlockPublicPolicy": true,
@@ -229,6 +234,54 @@ Object {
         },
       },
       "Type": "AWS::S3::BucketPolicy",
+    },
+    "MyTestBucketS34xxErrorAlarm066A1ADD": Object {
+      "Properties": Object {
+        "AlarmDescription": "S3 4xxError Rate Alarm",
+        "AlarmName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              Object {
+                "Ref": "MyTestBucket81062429",
+              },
+              "-S34xxErrorAlarm",
+            ],
+          ],
+        },
+        "ComparisonOperator": "GreaterThanThreshold",
+        "EvaluationPeriods": 5,
+        "MetricName": "4xxErrors",
+        "Namespace": "AWS/S3",
+        "Period": 300,
+        "Statistic": "Sum",
+        "Threshold": 1,
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+    "MyTestBucketS35xxErrorAlarm4D1FB7C8": Object {
+      "Properties": Object {
+        "AlarmDescription": "S3 5xxError Rate Alarm",
+        "AlarmName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              Object {
+                "Ref": "MyTestBucket81062429",
+              },
+              "-S35xxErrorAlarm",
+            ],
+          ],
+        },
+        "ComparisonOperator": "GreaterThanThreshold",
+        "EvaluationPeriods": 5,
+        "MetricName": "5xxErrors",
+        "Namespace": "AWS/S3",
+        "Period": 300,
+        "Statistic": "Sum",
+        "Threshold": 1,
+      },
+      "Type": "AWS::CloudWatch::Alarm",
     },
   },
 }

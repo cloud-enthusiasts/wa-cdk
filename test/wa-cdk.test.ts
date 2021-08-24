@@ -81,14 +81,33 @@ describe("Well Architected Bucket Properties Tests", () => {
     it("should enable monitoring by default", () => {
         new WABucket(stack, "MyTestBucket", {
             bucketName: "mytestbucket",
-            logBucketArn: "arn:aws:s3:::mytestlogbucket"
+            logBucketName: "mytestlogbucket"
         });
 
         cdkExpect(stack).to(haveResource("AWS::S3::Bucket", {
             "LoggingConfiguration": {
                 "DestinationBucketName": "mytestlogbucket",
-            }
+            },
+            "MetricsConfigurations":  [{
+                "Id": "MyTestBucket-ReqMetrics",
+               }]
         }));
+
+        cdkExpect(stack).to(haveResource("AWS::CloudWatch::Alarm", {
+                "AlarmDescription": "S3 4xxError Rate Alarm",
+                     "AlarmName":  {
+                       "Fn::Join":  [
+                             "",[{"Ref": "MyTestBucket81062429"}, "-S34xxErrorAlarm"],
+                       ],
+                     },
+                 "ComparisonOperator": "GreaterThanThreshold",
+                     "EvaluationPeriods": 5,
+                     "MetricName": "4xxErrors",
+                     "Namespace": "AWS/S3",
+                     "Period": 300,
+                     "Statistic": "Sum",
+                     "Threshold": 1,
+        }))
 
         expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
     });
