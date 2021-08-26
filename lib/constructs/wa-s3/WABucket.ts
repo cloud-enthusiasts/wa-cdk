@@ -1,25 +1,30 @@
 import {BlockPublicAccess, Bucket, BucketEncryption, BucketProps, IBucket, BucketMetrics} from "@aws-cdk/aws-s3";
 import { v4 as uuid } from 'uuid';
-import {Construct, Duration} from "@aws-cdk/core";
+import {Construct, Duration, Tag, Tags} from "@aws-cdk/core";
 import {Alarm, ComparisonOperator, Metric} from "@aws-cdk/aws-cloudwatch";
 
 export interface WellArchitectedBucketProps extends BucketProps {
 
-    /*
+    /**
      * This property is used to enable or disable bucket security, defaults to true
      */
     readonly security?: boolean;
 
-    /*
+    /**
      * This property is used to enable to disable bucket monitoring, defaults to true
      *
      */
     readonly monitoring?: boolean;
 
-    /*
+    /**
      * If monitoring is enabled then logBucket name must be provided and it should already exist in the environment.
      */
     readonly logBucketName?: string;
+
+    /**
+     * If backup is enabled objects will be versioned.
+     */
+    readonly backup?: boolean;
 
 }
 
@@ -37,10 +42,11 @@ export class WABucket extends Bucket {
             enforceSSL: WABucket.shouldEncryptInTransit(props),
             blockPublicAccess: WABucket.shouldBlockPublicAccess(props),
             serverAccessLogsBucket: WABucket.shouldEnableLogging(scope, props),
-            metrics: WABucket.shouldEnableMetrics(id, props)
+            metrics: WABucket.shouldEnableMetrics(id, props),
+            versioned: WABucket.shouldBackup(props)
         });
 
-        if(WABucket.shouldMonitor(props)) {
+        if (WABucket.shouldMonitor(props)) {
             this.create4xxErrorsAlarm();
             this.create5xxErrorsAlarm();
         }
@@ -55,7 +61,7 @@ export class WABucket extends Bucket {
             if(props.logBucketName != undefined) {
                 return Bucket.fromBucketArn(scope, "S3Logs", `arn:aws:s3:::${props.logBucketName}`)
             } else {
-                throw new Error("When monitoring is enabled, valid logBucketArn must be provided.")
+                throw new Error("When monitoring is enabled, valid logBucketName must be provided.")
             }
         } else {
             return undefined;
@@ -92,6 +98,10 @@ export class WABucket extends Bucket {
 
     private static shouldMonitor(props: WellArchitectedBucketProps) {
         return WABucket.getValueOrDefault(props.monitoring, true)
+    }
+
+    private static shouldBackup(props: WellArchitectedBucketProps) {
+        return WABucket.getValueOrDefault(props.backup, true)
     }
 
     private static shouldBlockPublicAccess(props: WellArchitectedBucketProps): BlockPublicAccess {

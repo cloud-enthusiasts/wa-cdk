@@ -31,6 +31,9 @@ describe("Well Architected Bucket Properties Tests", () => {
                             "SSEAlgorithm": "AES256",
                         }
                     }]
+            },
+            "VersioningConfiguration": {
+                "Status": "Enabled",
             }
         }));
 
