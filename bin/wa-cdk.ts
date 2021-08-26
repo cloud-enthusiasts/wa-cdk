@@ -19,5 +19,5 @@ const environment = new CfnParameter(stack, 'Environment', {
     default: "Development",
 });
 
-Tags.of(stack).add(project.logicalId, project.valueAsString)
-Tags.of(stack).add(environment.logicalId, environment.valueAsString)
+// Tags.of(stack).add(project.logicalId, project.valueAsString)
+// Tags.of(stack).add(environment.logicalId, environment.valueAsString)

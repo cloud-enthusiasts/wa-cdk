@@ -84,7 +84,8 @@ describe("Well Architected Bucket Properties Tests", () => {
     it("should enable monitoring by default", () => {
         new WABucket(stack, "MyTestBucket", {
             bucketName: "mytestbucket",
-            logBucketName: "mytestlogbucket"
+            logBucketName: "mytestlogbucket",
+            snsTopicArn: "arn:aws:sns:us-east-2:12345:MyTopic"
         });
 
         cdkExpect(stack).to(haveResource("AWS::S3::Bucket", {

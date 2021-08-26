@@ -2,6 +2,8 @@ import {BlockPublicAccess, Bucket, BucketEncryption, BucketProps, IBucket, Bucke
 import { v4 as uuid } from 'uuid';
 import {Construct, Duration, Tag, Tags} from "@aws-cdk/core";
 import {Alarm, ComparisonOperator, Metric} from "@aws-cdk/aws-cloudwatch";
+import {SnsAction} from "@aws-cdk/aws-cloudwatch-actions";
+import {Topic} from "@aws-cdk/aws-sns";
 
 export interface WellArchitectedBucketProps extends BucketProps {
 
@@ -20,6 +22,11 @@ export interface WellArchitectedBucketProps extends BucketProps {
      * If monitoring is enabled then logBucket name must be provided and it should already exist in the environment.
      */
     readonly logBucketName?: string;
+
+    /**
+     * If monitoring is enable then SNS topic for alarms must be provided.
+     */
+    readonly snsTopicArn?: string;
 
     /**
      * If backup is enabled objects will be versioned.
@@ -47,8 +54,8 @@ export class WABucket extends Bucket {
         });
 
         if (WABucket.shouldMonitor(props)) {
-            this.create4xxErrorsAlarm();
-            this.create5xxErrorsAlarm();
+            this.create4xxErrorsAlarm(props.snsTopicArn);
+            this.create5xxErrorsAlarm(props.snsTopicArn);
         }
     }
 
@@ -121,7 +128,7 @@ export class WABucket extends Bucket {
     }
 
 
-    private create4xxErrorsAlarm(): Alarm {
+    private create4xxErrorsAlarm(snsTopicArn?: string): Alarm {
         const error4xxMetric = new Metric({
             namespace: "AWS/S3",
             metricName: "4xxErrors",
@@ -137,11 +144,13 @@ export class WABucket extends Bucket {
             threshold: 1,
             evaluationPeriods: 5
         })
+        if(snsTopicArn)
+            alarm.addAlarmAction(new SnsAction(Topic.fromTopicArn(this, "4xxErrorsAlarmAction", snsTopicArn)))
 
         return alarm;
     }
 
-    private create5xxErrorsAlarm(): Alarm {
+    private create5xxErrorsAlarm(snsTopicArn?: string): Alarm {
         const error5xxMetric = new Metric({
             namespace: "AWS/S3",
             metricName: "5xxErrors",
@@ -158,6 +167,8 @@ export class WABucket extends Bucket {
             evaluationPeriods: 5
         })
 
+        if(snsTopicArn)
+            alarm.addAlarmAction(new SnsAction(Topic.fromTopicArn(this, "5xxErrorsAlarmAction", snsTopicArn)))
         return alarm;
     }
 }

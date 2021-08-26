@@ -246,6 +246,9 @@ Object {
     },
     "MyTestBucketS34xxErrorAlarm066A1ADD": Object {
       "Properties": Object {
+        "AlarmActions": Array [
+          "arn:aws:sns:us-east-2:12345:MyTopic",
+        ],
         "AlarmDescription": "S3 4xxError Rate Alarm",
         "AlarmName": Object {
           "Fn::Join": Array [
@@ -270,6 +273,9 @@ Object {
     },
     "MyTestBucketS35xxErrorAlarm4D1FB7C8": Object {
       "Properties": Object {
+        "AlarmActions": Array [
+          "arn:aws:sns:us-east-2:12345:MyTopic",
+        ],
         "AlarmDescription": "S3 5xxError Rate Alarm",
         "AlarmName": Object {
           "Fn::Join": Array [
